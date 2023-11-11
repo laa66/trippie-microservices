@@ -1,0 +1,4 @@
+# mapbox
+api:
+  mapbox:
+    secret-token: ${MATRIX_API_TOKEN}

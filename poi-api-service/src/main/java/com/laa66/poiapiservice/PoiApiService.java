@@ -1,12 +1,7 @@
 package com.laa66.poiapiservice;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+public interface PoiApiService {
 
-@SpringBootApplication
-public class PoiApiService {
+    String SEARCH_POI = "https://api.mapbox.com/search/searchbox/v1/category/{category_name}?access_token={access_token}&limit=25&proximity={longitude},{latitude}";
 
-    public static void main(String[] args) {
-        SpringApplication.run(PoiApiService.class, args);
-    }
 }
