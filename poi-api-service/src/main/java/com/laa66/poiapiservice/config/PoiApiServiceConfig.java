@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Map;
+import java.net.URI;
 
 @Configuration
 public class PoiApiServiceConfig {
@@ -17,11 +19,16 @@ public class PoiApiServiceConfig {
     @Value("${api.mapbox.secret-token}")
     private String secretToken;
 
+    @Value("${api.mapbox.base-url}")
+    private String baseUrl;
+
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
-                .baseUrl("https://api.mapbox.com")
-                .defaultUriVariables(Map.of("access_token", secretToken, "limit", "25"))
+                .uriBuilderFactory(new DefaultUriBuilderFactory(UriComponentsBuilder.newInstance()
+                        .uri(URI.create(baseUrl))
+                        .queryParam("access_token", secretToken)
+                        .queryParam("limit", "25")))
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
     }
