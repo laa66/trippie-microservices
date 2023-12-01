@@ -9,6 +9,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>poi-api-service</module>
+        <module>trip-generation-service</module>
     </modules>
 
     <parent>
