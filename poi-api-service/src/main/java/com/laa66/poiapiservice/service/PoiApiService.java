@@ -1,7 +1,8 @@
 package com.laa66.poiapiservice.service;
 
 import com.laa66.poiapiservice.domain.PoiApiResponse;
+import reactor.core.publisher.Mono;
 
 public interface PoiApiService {
-    PoiApiResponse getPoiCollection(String category, double longitude, double latitude);
+    Mono<PoiApiResponse> getPoiCollection(String category, double longitude, double latitude);
 }

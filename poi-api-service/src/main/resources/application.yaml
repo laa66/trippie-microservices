@@ -3,3 +3,6 @@ api:
   mapbox:
     base-url: https://api.mapbox.com
     secret-token: ${MATRIX_API_TOKEN}
+
+server:
+  port: 8081

@@ -14,13 +14,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = PoiApiServiceConfig.class)
 @WireMockTest(httpPort = 8088)
@@ -45,10 +46,14 @@ class PoiMapboxServiceIntegrationTest {
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBody(mapper.writeValueAsString(new PoiApiResponse("type", List.of())))));
 
-        PoiApiResponse response = poiApiService.getPoiCollection("car", 17.3, 51.3);
+        Mono<PoiApiResponse> response = poiApiService.getPoiCollection("car", 17.3, 51.3);
+        StepVerifier.create(response)
+                .assertNext(poiApiResponse -> {
+                    assertEquals("type", poiApiResponse.type());
+                    assertEquals(0, poiApiResponse.features().size());
+                })
+                .verifyComplete();
 
-        assertEquals("type", response.type());
-        assertEquals(0, response.features().size());
         verify(exactly(1), getRequestedFor(urlEqualTo("/search/searchbox/v1/category/car?access_token=mock_token&limit=25&proximity=17.3,51.3")));
     }
 
@@ -58,7 +63,11 @@ class PoiMapboxServiceIntegrationTest {
                 .willReturn(aResponse()
                         .withStatus(403)));
 
-        assertThrows(WebClientResponseException.class, () -> poiApiService.getPoiCollection("wrong_category", 17.3, 51.3));
+        Mono<PoiApiResponse> response = poiApiService.getPoiCollection("wrong_category", 17.3, 51.3);
+        StepVerifier.create(response)
+                .expectError(WebClientResponseException.class)
+                .verify();
+
         verify(exactly(1), getRequestedFor(urlEqualTo("/search/searchbox/v1/category/wrong_category?access_token=mock_token&limit=25&proximity=17.3,51.3")));
     }
 
