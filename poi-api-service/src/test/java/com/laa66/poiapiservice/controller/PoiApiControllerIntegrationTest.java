@@ -1,6 +1,7 @@
 package com.laa66.poiapiservice.controller;
 
 import com.laa66.poiapiservice.domain.PoiApiResponse;
+import com.laa66.poiapiservice.domain.TripPoint;
 import com.laa66.poiapiservice.service.PoiApiService;
 import com.laa66.poiapiservice.service.impl.PoiMapboxService;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
@@ -28,9 +30,9 @@ class PoiApiControllerIntegrationTest {
 
     @Test
     void shouldGetPoiApiResponseStatusOk() {
-        PoiApiResponse poiApiResponse = mock(PoiApiResponse.class);
+        Flux<TripPoint> tripPointFlux = Flux.just(mock(TripPoint.class), mock(TripPoint.class));
         when(poiApiService.getPoiCollection("gas_station", 20.354, 25.211))
-                .thenReturn(Mono.just(poiApiResponse));
+                .thenReturn(tripPointFlux);
 
         webClient.get()
                 .uri(uriBuilder -> uriBuilder
@@ -41,7 +43,8 @@ class PoiApiControllerIntegrationTest {
                 .exchange()
                 .expectStatus()
                 .isOk()
-                .expectBody(PoiApiResponse.class);
+                .expectBody()
+                .jsonPath("$").isArray();
 
         verify(poiApiService, times(1))
                 .getPoiCollection("gas_station", 20.354, 25.211);
