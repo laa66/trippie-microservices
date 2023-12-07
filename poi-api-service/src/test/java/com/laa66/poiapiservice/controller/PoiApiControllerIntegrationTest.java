@@ -1,6 +1,5 @@
 package com.laa66.poiapiservice.controller;
 
-import com.laa66.poiapiservice.domain.PoiApiResponse;
 import com.laa66.poiapiservice.domain.TripPoint;
 import com.laa66.poiapiservice.service.PoiApiService;
 import com.laa66.poiapiservice.service.impl.PoiMapboxService;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 import static org.mockito.Mockito.*;
 
